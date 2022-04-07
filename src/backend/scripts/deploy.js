@@ -6,10 +6,23 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   // deploy contracts here:
+  const Token = await ethers.getContractFactory("SampleToken");
+  const token = await Token.deploy(1000000000);
   
-  
+  const Vault = await ethers.getContractFactory("Vault");
+  const vault = await Vault.deploy("Wrapped SampleToken", "wSAM", token.address);
+
+  const Staking = await ethers.getContractFactory("StakingRewards");
+  const staking = await Staking.deploy(token.address);
+
+  console.log("Token address:", token.address);
+  console.log("Vault address:", vault.address);
+  console.log("StakingRewards address:", staking.address);
+
   // For each contract, pass the deployed contract and name to this function to save a copy of the contract ABI and address to the front end.
-  saveFrontendFiles();
+  saveFrontendFiles(token, "SampleToken");
+  saveFrontendFiles(vault, "Vault");
+  saveFrontendFiles(staking, "StakingRewards");
 }
 
 function saveFrontendFiles(contract, name) {
